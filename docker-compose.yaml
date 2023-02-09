@@ -28,10 +28,3 @@ services:
       - db
     volumes:
       - ./src:/application/src
-
-
-
-
-
-  
-
