@@ -8,9 +8,30 @@ services:
     ports:
       - 3306:3306
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: root
-      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_DATABASE: $MYSQL_DATABASE
+      MYSQL_PORT: $MYSQL_PORT
+
+  application:
+    user: node:node
+    container_name: application
+    build:
+      context: .
+      dockerfile: ./docker/application.dockerfile
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+    depends_on:
+      - db
+    volumes:
+      - ./src:/application/src
+
+
+
+
 
   
 

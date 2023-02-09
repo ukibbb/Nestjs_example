@@ -7,67 +7,76 @@ import {
   Query,
   Param,
   Body,
-  Res,
   HttpStatus,
   ParseIntPipe,
+  BadRequestException,
+  HttpCode,
+  InternalServerErrorException,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { OlimpicResultsService } from './olimpic-results.service';
-import { OlimpicResult } from 'src/olimpic-results/validation/results';
+import { OlimpicResult } from './validation/olimpic-result.validation';
+import { ResultQuery } from './validation/result-query.validation';
+
+import { ZodError } from 'zod';
+
+//// https://www.npmjs.com/package/nestjs-zod - could be more "nest" way to do validation.
 
 @Controller('olimpic/results')
 export class OlimpicResultsController {
   constructor(private resultsService: OlimpicResultsService) {}
 
   @Get('/list')
-  async getResults(@Res() res: Response, @Query() query) {
+  @HttpCode(HttpStatus.OK)
+  async getResults(@Query() query: Partial<ResultQuery>) {
     try {
-      const result = await this.resultsService.getResults(query);
-      return res.status(HttpStatus.OK).json(result);
+      const validatedQuery = await ResultQuery.parseAsync(query);
+      return await this.resultsService.getResults(validatedQuery);
     } catch (e) {
-      const error = e as Error;
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: JSON.parse(error.message),
-      });
+      if (e instanceof ZodError) {
+        throw new BadRequestException(e.issues);
+      }
+      throw new InternalServerErrorException();
     }
   }
 
   @Post('/add')
-  async addResult(@Res() res: Response, @Body() result: OlimpicResult) {
+  @HttpCode(HttpStatus.CREATED)
+  async addResult(@Body() body: Partial<OlimpicResult>) {
     try {
-      const insertedResult = await this.resultsService.addResult(result);
-      return res.status(HttpStatus.CREATED).json(insertedResult);
+      const result = await OlimpicResult.parseAsync(body);
+      return await this.resultsService.addResult(result);
     } catch (e) {
-      const error = e as Error;
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: JSON.parse(error.message),
-      });
+      if (e instanceof ZodError) {
+        throw new BadRequestException(e.issues);
+      }
+      throw new InternalServerErrorException();
     }
   }
 
   @Put('/update/:id')
+  @HttpCode(HttpStatus.OK)
   async updateResult(
     @Param('id', ParseIntPipe) id: number,
-    @Res() res: Response,
-    @Body() result: OlimpicResult,
+    @Body() body: OlimpicResult,
   ) {
-    const updatedResult = await this.resultsService.updateResult(id, result);
-    return res.status(HttpStatus.OK).json(updatedResult);
+    try {
+      const validatedRecord = await OlimpicResult.parseAsync(body);
+      return await this.resultsService.updateResult(id, validatedRecord);
+    } catch (e) {
+      if (e instanceof ZodError) {
+        throw new BadRequestException(e.issues);
+      }
+      throw new InternalServerErrorException();
+    }
   }
 
   @Delete('remove/:id')
-  async deleteResult(
-    @Param('id', ParseIntPipe) id: number,
-    @Res() res: Response,
-  ) {
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteResult(@Param('id', ParseIntPipe) id: number) {
     try {
-      await this.resultsService.deleteResult(id);
-      return res.status(HttpStatus.NO_CONTENT);
+      return await this.resultsService.deleteResult(id);
     } catch (e) {
-      const error = e as Error;
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: JSON.parse(error.message),
-      });
+      throw new InternalServerErrorException();
     }
   }
 }
