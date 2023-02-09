@@ -16,8 +16,9 @@ import {
 import { OlimpicResultsService } from './olimpic-results.service';
 import { OlimpicResult } from './validation/olimpic-result.validation';
 import { ResultQuery } from './validation/result-query.validation';
-
+import { CountryNotUniqueException } from './errors/olimpic-results.errors';
 import { ZodError } from 'zod';
+import { TypeORMError } from 'typeorm';
 
 //// https://www.npmjs.com/package/nestjs-zod - could be more "nest" way to do validation.
 
@@ -46,6 +47,12 @@ export class OlimpicResultsController {
       const result = await OlimpicResult.parseAsync(body);
       return await this.resultsService.addResult(result);
     } catch (e) {
+      if (e instanceof TypeORMError) {
+        throw new CountryNotUniqueException(
+          'This country is alread on the list',
+          400,
+        );
+      }
       if (e instanceof ZodError) {
         throw new BadRequestException(e.issues);
       }
