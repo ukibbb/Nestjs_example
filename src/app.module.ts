@@ -18,6 +18,8 @@ const dbConfig = {
       entities: [OlimpicResultEntity, MedalsTotalEntity],
       autoLoadEntities: true,
       synchronize: true,
+      // don't use in production, I assumed creating migrations -> production ready code base is not
+      // in scope of assignment.
     };
   },
 };

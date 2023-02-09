@@ -20,7 +20,7 @@ import { CountryNotUniqueException } from './errors/olimpic-results.errors';
 import { ZodError } from 'zod';
 import { TypeORMError } from 'typeorm';
 
-//// https://www.npmjs.com/package/nestjs-zod - could be more "nest" way to do validation.
+//// https://www.npmjs.com/package/nestjs-zod - could be more "nest" way to do validation with dto's.
 
 @Controller('olimpic/results')
 export class OlimpicResultsController {
@@ -49,7 +49,7 @@ export class OlimpicResultsController {
     } catch (e) {
       if (e instanceof TypeORMError) {
         throw new CountryNotUniqueException(
-          'This country is alread on the list',
+          'This country is already on the list.',
           400,
         );
       }

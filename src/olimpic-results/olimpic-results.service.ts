@@ -6,6 +6,7 @@ import { ResultQuery } from './validation/result-query.validation';
 
 import { OlimpicResultEntity } from './entity/olimpic-result.entity';
 import { MedalsTotalEntity } from './entity/medals-total.entity';
+
 @Injectable()
 export class OlimpicResultsService {
   constructor(
@@ -62,9 +63,9 @@ export class OlimpicResultsService {
 
     const medals = this.medalsRespository.create({
       id: medalsId,
-      gold: record.medals!.gold!,
-      bronze: record.medals!.bronze!,
-      silver: record.medals!.silver!,
+      gold: record.medals.gold,
+      bronze: record.medals.bronze,
+      silver: record.medals.silver,
     });
 
     const result = this.resultRepository.create({

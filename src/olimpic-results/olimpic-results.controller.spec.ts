@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OlimpicResultsService } from './olimpic-results.service';
 import { OlimpicResultsController } from './olimpic-results.controller';
+import { Repository } from 'typeorm';
 
 jest.mock('./olimpic-results.service');
 
@@ -11,6 +12,7 @@ describe('OlimicResultsController', () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
+      imports: [Repository],
       controllers: [OlimpicResultsController],
       providers: [OlimpicResultsService],
     }).compile();
@@ -32,5 +34,7 @@ describe('OlimicResultsController', () => {
     expect(
       await controller.getResults({ offset: '0', limit: '5' } as any),
     ).toStrictEqual({ offset: 0, limit: 5 });
+
+    expect(service.getResults).toHaveBeenCalledWith({ offset: 0, limit: 5 });
   });
 });
