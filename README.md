@@ -1,57 +1,34 @@
+# Codemask
 
+## How to run this project ?
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
-```bash
-$ npm install
-```
-
-## Running the app
-
-```bash
-docker-compose up -d db
-npm run migration:run // with wait-for-it
+1. Make sure you have docker and docker-compose installed.
 
 ```
+https://docs.docker.com/compose/install/
+https://docs.docker.com/engine/install/
+```
+2. Clone repository.
 
-```bash
-# development
-$ npm run start
+3. Change name of .env.template to .env and fill enviroment variables.
 
-# watch mode
-$ npm run start:dev
+4. Then in project root directory run:
 
-# production mode
-$ npm run start:prod
+```
+docker-compose build
+docker-compose up
 ```
 
-## Test
+Project is up and runnning on `http://localhost:3000`
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```
+Routes available.
+/v1/api/olimpic/results/list, GET} 
+/v1/api/olimpic/results/add, POST}
+/v1/api/olimpic/results/update/:id, PUT
+/v1/api/olimpic/results/remove/:id, DELETE}
 ```
 
-## Support
+### ERD diagram
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+![alt text](./erd.png)

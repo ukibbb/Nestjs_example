@@ -60,7 +60,6 @@ export class OlimpicResultsService {
     const {
       medals: { id: medalsId },
     } = await this.resultRepository.findOne({ where: { id } });
-
     const medals = this.medalsRespository.create({
       id: medalsId,
       gold: record.medals.gold,

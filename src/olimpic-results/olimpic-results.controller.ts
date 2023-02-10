@@ -16,7 +16,10 @@ import {
 import { OlimpicResultsService } from './olimpic-results.service';
 import { OlimpicResult } from './validation/olimpic-result.validation';
 import { ResultQuery } from './validation/result-query.validation';
-import { CountryNotUniqueException } from './errors/olimpic-results.errors';
+import {
+  CountryNotUniqueException,
+  OlimpicResultNotExists,
+} from './errors/olimpic-results.errors';
 import { ZodError } from 'zod';
 import { TypeORMError } from 'typeorm';
 
@@ -52,8 +55,7 @@ export class OlimpicResultsController {
           'This country is already on the list.',
           400,
         );
-      }
-      if (e instanceof ZodError) {
+      } else if (e instanceof ZodError) {
         throw new BadRequestException(e.issues);
       }
       throw new InternalServerErrorException();
@@ -70,7 +72,12 @@ export class OlimpicResultsController {
       const validatedRecord = await OlimpicResult.parseAsync(body);
       return await this.resultsService.updateResult(id, validatedRecord);
     } catch (e) {
-      if (e instanceof ZodError) {
+      if (e instanceof TypeError) {
+        throw new OlimpicResultNotExists(
+          "Result with this id doesn't exist.",
+          400,
+        );
+      } else if (e instanceof ZodError) {
         throw new BadRequestException(e.issues);
       }
       throw new InternalServerErrorException();
